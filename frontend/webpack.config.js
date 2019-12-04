@@ -27,6 +27,15 @@ module.exports = {
         // configuration regarding modules
         rules: [
             {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 8192,
+                        },
+                    },
+                ],
                 test: [/\.js$/,/\.scss$/], // include .js files
                 enforce: "pre", // preload the jshint loader
                 exclude: /node_modules/, // exclude any and all files in the `node_modules folder`

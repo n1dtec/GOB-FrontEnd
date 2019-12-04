@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Chart } from "react-google-charts";
 
-const TemperateGauge = ({temperature}) => {
+const OxygenGauge = ({oxygen}) => {
     return (
         <Chart
             width={500}
@@ -10,18 +10,18 @@ const TemperateGauge = ({temperature}) => {
             loader={<div>Loading Chart</div>}
             data={[
                 [ 'Label', 'Value' ],
-                [ "", temperature ]
+                [ "", oxygen ]
             ]}
             options={{
-                redFrom: 85,
-                redTo: 100,
-                redColor: "rgba(229,103,22,0.36)",
-                yellowFrom: 75,
-                yellowTo: 85,
-                yellowColor: "rgba(99,99,214,0.07)",
+                redFrom: 60,
+                redTo: 90,
+                redColor: "rgba(113,69,138,0.57)",
+                yellowFrom: 90,
+                yellowTo: 96,
+                yellowColor: "rgba(72,59,82,0.57)",
                 backgroundColor: "rgba(76,82,16,0.57)",
                 minorTicks: 5,
-                min: 50,
+                min: 60,
                 max: 100,
                 is3D: true
             }}
@@ -29,4 +29,4 @@ const TemperateGauge = ({temperature}) => {
         />
     );
 };
-export default TemperateGauge;
+export default OxygenGauge;

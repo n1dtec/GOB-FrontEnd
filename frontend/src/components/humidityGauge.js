@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Chart } from "react-google-charts";
 
-const TemperateGauge = ({temperature}) => {
+const HumidityGauge = ({humidity}) => {
     return (
         <Chart
             width={500}
@@ -10,23 +10,23 @@ const TemperateGauge = ({temperature}) => {
             loader={<div>Loading Chart</div>}
             data={[
                 [ 'Label', 'Value' ],
-                [ "", temperature ]
+                [ "", humidity ]
             ]}
             options={{
-                redFrom: 85,
-                redTo: 100,
-                redColor: "rgba(229,103,22,0.36)",
-                yellowFrom: 75,
-                yellowTo: 85,
-                yellowColor: "rgba(99,99,214,0.07)",
+                redFrom: 50,
+                redTo: 60,
+                redColor: "rgba(113,69,138,0.57)",
+                yellowFrom: 45,
+                yellowTo: 50,
+                yellowColor: "rgba(72,59,82,0.57)",
                 backgroundColor: "rgba(76,82,16,0.57)",
                 minorTicks: 5,
-                min: 50,
-                max: 100,
+                min: 20,
+                max: 60,
                 is3D: true
             }}
             rootProps={{ 'data-testid': '1' }}
         />
     );
 };
-export default TemperateGauge;
+export default HumidityGauge;

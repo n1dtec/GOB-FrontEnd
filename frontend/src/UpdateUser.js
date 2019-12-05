@@ -16,11 +16,15 @@ class AddUser extends Component {
     constructor(props) {
         super(props);
 
+        this.goToHome = this.goToHome.bind(this);
+        this.deleteUsers = this.deleteUsers.bind(this);
+        this.addUsers = this.addUsers.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     state = {
-        currentUser: 1,
+        currentUser: this.props.user,
         doesUserExist: false,
         currentUserProfile: [],
         systemID: 1,
@@ -30,6 +34,7 @@ class AddUser extends Component {
         phoneNumber: null,
         admin: 0,
         allowed: null,
+        userName: null,
         image: [],
         metrics: [],
         warning: [],
@@ -40,14 +45,14 @@ class AddUser extends Component {
 
     ifLogoutClicked() {
         ReactDOM.render(
-            <Homepage/>,
+            <Homepage />,
             document.getElementById('root')
         );
     }
 
     goToHome() {
         ReactDOM.render(
-            <App/>,
+            <App user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -55,7 +60,7 @@ class AddUser extends Component {
     deleteUsers()
     {
         ReactDOM.render(
-            <DeleteUser />,
+            <DeleteUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -63,7 +68,7 @@ class AddUser extends Component {
     addUsers()
     {
         ReactDOM.render(
-            <AddUser />,
+            <AddUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -88,9 +93,14 @@ class AddUser extends Component {
         this.state.email = this.refs.email.value;
         this.state.phoneNumber = this.refs.phoneNumber.value;
         this.state.allowed = this.refs.allowed.value.toString().toLowerCase() === "yes" ? 1 : 0;
+        this.state.userName = this.refs.userName.value;
 
         if(this.state.userID === "") {
             alert("Please enter a user ID for the user");
+            return;
+        }
+        if(this.state.userName === "") {
+            alert("Please enter a user name to add the user");
             return;
         }
         if(this.state.password === "") {
@@ -110,9 +120,10 @@ class AddUser extends Component {
             "  \"Password\": \"" + this.state.password + "\",\n" +
             "  \"Email\": \"" + this.state.email + "\",\n" +
             "  \"PhoneNumber\": " + this.state.phoneNumber + ",\n" +
-            "  \"Allowed\": " + this.state.allowed + "\n" +
+            "  \"Allowed\": " + this.state.allowed + ",\n" +
+            "  \"UserName\": \"" + this.state.userName + "\"\n" +
             "}";
-
+        console.log(requestBody);
         let request = new Request('https://localhost:44348/updateUser/' + this.state.systemID + '/' + this.state.userID);
         fetch(request, {method: 'PUT',
             headers: {'Content-Type': 'application/json'},
@@ -133,39 +144,28 @@ class AddUser extends Component {
         let request = new Request('https://localhost:44307/EmailValidator.asmx/checkEmailValidity');
         fetch(request, {method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: "email="+this.state.email})
+            body: "email="+this.state.email})
             .then(function (response) {
-                return response.json();
+                return response.text();
             })
-            .then((json) => {
-                console.log(json);
-                // if (text !== "true") {
-                //     this.refs.errorText.innerHTML = "This user does not exist. Please try again for a different user.";
-                //     return;
-                // }
-                // this.refs.errorText.innerHTML = "";
-                // this.state.doesUserExist = true;
-                // console.log("exsi " + this.state.doesUserExist);
-                // let deleteRequest = new Request(('https://localhost:44348/deleteUser/8/' + id).toString());
-                // fetch(deleteRequest, {method: 'DELETE'})
-                //     .then(function (deleteResponse) {
-                //         console.log(request.url);
-                //         return deleteResponse.text();
-                //     })
-                //     .then((message) => {
-                //         if (message !== "true") {
-                //             this.refs.errorText.innerHTML = "There was an error while deleting the user. Please try again.";
-                //             return;
-                //         }
-                //         this.refs.errorText.innerHTML = "The user has been deleted successfully";
-                //     })
+            .then((xml) => {
+                console.log(xml);
+                if(xml.toString().includes('true'))
+                    console.log("True");
+                if (xml.toString().includes('false')) {
+                    console.log("False");
+                    alert("This email is not valid. Please enter a valid email for the user");
+                    return;
+                }
+                this.refs.statusText.innerHTML = "";
+                this.checkUser();
             })
             .catch(console.log);
     }
 
     handleSubmit = event => {
         event.preventDefault();
-        this.checkUser();
+        this.checkEmail();
     }
 
     render() {
@@ -203,6 +203,10 @@ class AddUser extends Component {
                                                 <Form.Group>
                                                     <Form.Control ref="userID" type="text"
                                                                  placeholder="Enter User ID" className="mr-sm-3"/>
+                                                </Form.Group>
+                                                <Form.Group>
+                                                    <Form.Control ref="userName" type="text"
+                                                                  placeholder="Enter User Name" className="mr-sm-3"/>
                                                 </Form.Group>
                                                 <Form.Group>
                                                     <FormControl ref="email" type="text"

@@ -17,11 +17,15 @@ class AddUser extends Component {
     constructor(props) {
         super(props);
 
+        this.goToHome = this.goToHome.bind(this);
+        this.deleteUsers = this.deleteUsers.bind(this);
+        this.updateUsers = this.updateUsers.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     state = {
-        currentUser: 1,
+        currentUser: this.props.user,
         doesUserExist: false,
         currentUserProfile: [],
         systemID: 1,
@@ -31,6 +35,7 @@ class AddUser extends Component {
         phoneNumber: null,
         admin: 0,
         allowed: null,
+        userName: null,
         image: [],
         metrics: [],
         warning: [],
@@ -48,7 +53,7 @@ class AddUser extends Component {
 
     goToHome() {
         ReactDOM.render(
-            <App/>,
+            <App user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -56,7 +61,7 @@ class AddUser extends Component {
     deleteUsers()
     {
         ReactDOM.render(
-            <DeleteUser />,
+            <DeleteUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -64,7 +69,7 @@ class AddUser extends Component {
     updateUsers()
     {
         ReactDOM.render(
-            <UpdateUser />,
+            <UpdateUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -89,9 +94,14 @@ class AddUser extends Component {
         this.state.email = this.refs.email.value;
         this.state.phoneNumber = this.refs.phoneNumber.value;
         this.state.allowed = this.refs.allowed.value.toString().toLowerCase() === "yes" ? 1 : 0;
+        this.state.userName = this.refs.userName.value;
 
         if(this.state.userID === "") {
             alert("Please enter a user ID for the user");
+            return;
+        }
+        if(this.state.userName === "") {
+            alert("Please enter a user name to add the user");
             return;
         }
         if(this.state.password === "") {
@@ -114,8 +124,10 @@ class AddUser extends Component {
             "  \"Email\": \"" + this.state.email + "\",\n" +
             "  \"PhoneNumber\": " + this.state.phoneNumber + ",\n" +
             "  \"Admin\": " + this.state.admin + ",\n" +
-            "  \"Allowed\": " + this.state.allowed + "\n" +
+            "  \"Allowed\": " + this.state.allowed + ",\n" +
+            "  \"userName\": \"" + this.state.userName + "\"\n" +
             "}";
+        console.log(requestBody);
         let request = new Request('https://localhost:44348/AddUser');
         fetch(request, {method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -138,13 +150,14 @@ class AddUser extends Component {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: "email="+this.state.email})
             .then(function (response) {
-                // const parser = new DOMParser();
-                // const xml = parser.parseFromString(response.toString(), 'text/xml');
                 return response.text();
             })
             .then((xml) => {
-                if (xml.toString() !== "true") {
-                    console.log("Here");
+                console.log(xml);
+                if(xml.toString().includes('true'))
+                    console.log("Found it");
+                if (xml.toString().includes('false')) {
+                    console.log("Finally");
                     alert("This email is not valid. Please enter a valid email for the user");
                     return;
                 }
@@ -194,6 +207,10 @@ class AddUser extends Component {
                                                 <Form.Group>
                                                     <Form.Control ref="userID" type="text"
                                                                   placeholder="Enter User ID" className="mr-sm-3"/>
+                                                </Form.Group>
+                                                <Form.Group>
+                                                    <Form.Control ref="userName" type="text"
+                                                                  placeholder="Enter User Name" className="mr-sm-3"/>
                                                 </Form.Group>
                                                 <Form.Group>
                                                     <Form.Control ref="email" type="text"

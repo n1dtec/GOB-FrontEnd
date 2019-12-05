@@ -17,11 +17,15 @@ class DeleteUser extends Component {
     constructor(props) {
         super(props);
 
+        this.goToHome = this.goToHome.bind(this);
+        this.addUsers = this.addUsers.bind(this);
+        this.updateUsers = this.updateUsers.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     state = {
-        currentUser: 1,
+        currentUser: this.props.user,
         doesUserExist : false,
         currentUserProfile: [],
         image: [],
@@ -34,14 +38,14 @@ class DeleteUser extends Component {
 
     ifLogoutClicked() {
         ReactDOM.render(
-            <Homepage/>,
+            <Homepage />,
             document.getElementById('root')
         );
     }
 
     goToHome() {
         ReactDOM.render(
-            <App/>,
+            <App user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -49,7 +53,7 @@ class DeleteUser extends Component {
     addUsers()
     {
         ReactDOM.render(
-            <AddUser />,
+            <AddUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
@@ -57,7 +61,7 @@ class DeleteUser extends Component {
     updateUsers()
     {
         ReactDOM.render(
-            <UpdateUser />,
+            <UpdateUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }

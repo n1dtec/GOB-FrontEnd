@@ -27,6 +27,9 @@ class App extends Component {
         super(props);
 
         this.demoRoomState = this.demoRoomState.bind(this);
+        this.addUsers = this.addUsers.bind(this);
+        this.deleteUsers = this.deleteUsers.bind(this);
+        this.updateUsers = this.updateUsers.bind(this);
     }
 
     state = {
@@ -36,11 +39,13 @@ class App extends Component {
         metrics: [],
         warning: [],
         curTime: null,
-        fNumber: '2067140670',
-        hNumber: '2535278275',
-        weather: 60,
+        fNumber: '123456789',
+        hNumber: '123456789',
+        rNumber: '123456789',
+        weather: 49,
         metricFlag: true,
         smsFlag: true,
+        customWarning: 'Alert!%20Your%20baby%20is%20crying!',
         babyText: 'John is sleeping'
     };
     intervalID = null;
@@ -80,16 +85,17 @@ class App extends Component {
 
     componentDidMount() {
 
-        // let request = new Request('http://localhost:8080/MyRESTApp/Weather');
-        // fetch(request, {method: 'GET'})
-        //     .then(function (response) {
-        //         // Convert to text
-        //         return response.text();
-        //     })
-        //     .then((data) => {
-        //         console.log("Weather" + data.toString());
-        //     })
-        //     .catch(console.log);
+        let request = new Request('http://localhost:8080/MyRESTApp/Weather');
+        fetch(request, {method: 'GET'})
+            .then(function (response) {
+                // Convert to text
+                return response.text();
+            })
+            .then((data) => {
+                data !== undefined ? this.state.weather = data.toString() : this.state.weather = '49';
+                console.log("Weather" + data.toString());
+            })
+            .catch(console.log);
 
 
         this.intervalID = setInterval(() => {
@@ -130,10 +136,13 @@ class App extends Component {
                     this.state.warning.map((users) => {
                         userData.map((nUser) => {
                                 if (nUser.user === users.user) {
-                                    console.log("Same");
                                     if (this.state.smsFlag) {
-                                        // let smsRequest = new Request('https://localhost:44348/sendNotification/' + this.state.hNumber + '/' + users.user.toString());
-                                        // fetch(smsRequest, {method: 'GET'});
+                                        let smsRequest = new Request('https://localhost:44348/sendNotification/' + this.state.hNumber + '/' + users.user.toString());
+                                        fetch(smsRequest, {method: 'GET'});
+                                        smsRequest = new Request('https://localhost:44348/sendNotification/' + this.state.fNumber + '/' + users.user.toString());
+                                        fetch(smsRequest, {method: 'GET'});
+                                        smsRequest = new Request('https://localhost:44348/sendNotification/' + this.state.rNumber + '/' + users.user.toString());
+                                        fetch(smsRequest, {method: 'GET'});
                                         this.state.smsFlag = false;
                                     }
                                 }
@@ -173,8 +182,15 @@ class App extends Component {
             })
             .then(async (data) => {
                 this.state.metricFlag = !this.state.metricFlag;
-                if(!this.state.metricFlag)
+                if(!this.state.metricFlag) {
+                    let smsRequest = new Request('https://localhost:44348/sendCustomNotification/' + this.state.hNumber + '/' + this.state.customWarning);
+                    fetch(smsRequest, {method: 'GET'});
+                    smsRequest = new Request('https://localhost:44348/sendCustomNotification/' + this.state.fNumber + '/' + this.state.customWarning);
+                    fetch(smsRequest, {method: 'GET'});
+                    smsRequest = new Request('https://localhost:44348/sendCustomNotification/' + this.state.rNumber + '/' + this.state.customWarning);
+                    fetch(smsRequest, {method: 'GET'});
                     await this.sleep(1000);
+                }
                 this.setState({metrics: data.Table[0]}, async () => {
                         this.setTemperature();
                         this.setOxygenLevel();
@@ -197,21 +213,21 @@ class App extends Component {
 
     deleteUsers() {
         ReactDOM.render(
-            <DeleteUser/>,
+            <DeleteUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
 
     addUsers() {
         ReactDOM.render(
-            <AddUser/>,
+            <AddUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }
 
     updateUsers() {
         ReactDOM.render(
-            <UpdateUser/>,
+            <UpdateUser user={this.state.currentUser}/>,
             document.getElementById('root')
         );
     }

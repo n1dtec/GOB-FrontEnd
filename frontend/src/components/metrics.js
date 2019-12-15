@@ -1,5 +1,13 @@
 import React from 'react'
 
+/*
+ * Author : Harnidh Kaur
+ * Project : Guardians of the Babies
+ * Subject : TCSS 559
+ *
+ * This class builds the section for displaying metrics inside baby's room in a textual format
+ */
+
 const Metrics = ({ metrics }) => {
     return (
         <div style={{'textAlign': 'center'}}>

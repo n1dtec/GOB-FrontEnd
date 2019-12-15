@@ -1,6 +1,14 @@
 import * as React from "react";
 import { Chart } from "react-google-charts";
 
+/*
+ * Author : Harnidh Kaur
+ * Project : Guardians of the Babies
+ * Subject : TCSS 559
+ *
+ * This class builds the oxygen level gauge using Google Charts
+ */
+
 const OxygenGauge = ({oxygen}) => {
     return (
         <Chart
